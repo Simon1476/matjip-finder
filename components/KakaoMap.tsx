@@ -139,7 +139,11 @@ export default function KakaoMap({
 
   // 4) 선택된 가게가 바뀌면: 말풍선을 띄우고 지도를 그쪽으로 이동
   useEffect(() => {
-    if (!ready || !selectedId) return;
+    if (!ready) return;
+    if (!selectedId) {
+      infoRef.current.close(); // 선택 해제(✕)하면 말풍선도 닫기
+      return;
+    }
     const marker = markersRef.current.get(selectedId);
     const place = places.find((p) => p.id === selectedId);
     if (!marker || !place) return;

@@ -5,6 +5,7 @@ import SearchBar from "@/components/SearchBar";
 import LocationControls from "@/components/LocationControls";
 import CategoryFilter, { type Category } from "@/components/CategoryFilter";
 import PlaceList from "@/components/PlaceList";
+import PlaceCard from "@/components/PlaceCard";
 import KakaoMap from "@/components/KakaoMap";
 import { Button } from "@/components/ui/button";
 import { usePlaces } from "@/hooks/usePlaces";
@@ -30,6 +31,7 @@ export default function Home() {
   const [radius, setRadius] = useState(1000);
   const [category, setCategory] = useState<Category | null>(null); // null이면 전체
   const [lastQuery, setLastQuery] = useState<string | null>(null); // 지역 검색에서 마지막으로 검색한 지역명
+  const selectedPlace = places.find((p) => p.id === selectedId) ?? null;
 
   // 지역 검색: 내 위치 모드를 끄고 키워드로 검색 (선택해 둔 카테고리는 유지)
   function handleSearch(query: string) {
@@ -97,6 +99,12 @@ export default function Home() {
         <p className="mt-1.5 text-xs text-muted-foreground">
           💡 지도를 클릭하면 그 위치를 기준으로 주변 맛집을 찾아요.
         </p>
+        {/* 선택한 가게는 지도 바로 아래에 고정해서 보여줘요: 스크롤 없이 지도를 보던 시선 그대로 읽을 수 있어요 */}
+        {selectedPlace && (
+          <div className="mt-3">
+            <PlaceCard place={selectedPlace} selected onClose={() => select(null)} />
+          </div>
+        )}
       </div>
 
       <section className="mt-6">

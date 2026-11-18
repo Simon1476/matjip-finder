@@ -32,7 +32,7 @@ export function usePlaces() {
   const baseUrlRef = useRef<string | null>(null);
 
   // useCallback: 함수가 매 렌더마다 새로 만들어지지 않게 고정 (지도의 effect가 불필요하게 재실행되는 걸 방지)
-  const select = useCallback((id: string) => setSelectedId(id), []);
+  const select = useCallback((id: string | null) => setSelectedId(id), []); // null = 선택 해제
 
   // pageNum === 1 이면 새 검색(목록 교체), > 1 이면 "더 보기"(목록 뒤에 이어 붙임)
   async function load(source: UrlSource, pageNum: number) {
