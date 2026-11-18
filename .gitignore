@@ -39,3 +39,9 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# personal handoff notes (local only)
+HANDOFF.md
+
+# playwright MCP logs/screenshots
+.playwright-mcp/

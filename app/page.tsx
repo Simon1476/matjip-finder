@@ -38,6 +38,12 @@ export default function Home() {
     });
   }
 
+  // 지도를 클릭해서 기준 위치를 직접 지정: PC처럼 GPS가 없어 위치가 부정확할 때 쓰면 좋아요
+  function handlePickLocation(o: Origin) {
+    setOrigin(o);
+    search(nearbyUrl(o, radius));
+  }
+
   // 1km ↔ 2km 전환: 내 위치 모드일 때만 다시 검색
   function handleRadiusChange(r: number) {
     setRadius(r);
@@ -66,13 +72,17 @@ export default function Home() {
           onSelect={select}
           origin={origin}
           radius={origin ? radius : null}
+          onPickLocation={handlePickLocation}
         />
+        <p className="mt-1.5 text-xs text-muted-foreground">
+          💡 지도를 클릭하면 그 위치를 기준으로 주변 맛집을 찾아요.
+        </p>
       </div>
 
       <section className="mt-6">
         {origin && !loading && !error && searched && (
           <p className="mb-3 text-sm text-muted-foreground">
-            📍 내 위치 기준 <b className="text-foreground">{radius / 1000}km</b> 이내 · 총{" "}
+            📍 선택한 위치 기준 <b className="text-foreground">{radius / 1000}km</b> 이내 · 총{" "}
             {total.toLocaleString()}곳 중 가까운 {places.length}곳
           </p>
         )}
