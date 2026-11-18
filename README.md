@@ -2,6 +2,8 @@
 
 지역을 검색하거나, **지도를 클릭**하거나, **내 위치**를 기준으로 주변 1km / 2km 안의 맛집을 찾아 지도와 목록으로 보여주는 웹 앱이에요.
 
+**🔗 데모: https://matjip-finder-umber.vercel.app/**
+
 ![맛집 찾기 화면](docs/screenshot.png)
 
 ## 기능
