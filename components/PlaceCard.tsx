@@ -25,7 +25,12 @@ interface Props {
 }
 
 // 목록과 "선택한 가게" 고정 카드가 같은 모양을 쓰도록 분리한 카드 컴포넌트
-export default function PlaceCard({ place, selected, onClick, onClose }: Props) {
+export default function PlaceCard({
+  place,
+  selected,
+  onClick,
+  onClose,
+}: Props) {
   const dist = formatDistance(place.distance);
   return (
     <Card
@@ -33,7 +38,7 @@ export default function PlaceCard({ place, selected, onClick, onClose }: Props) 
       className={cn(
         "relative gap-1 py-4",
         onClick && "cursor-pointer transition-colors hover:bg-accent",
-        selected && "border-2 border-primary bg-primary/10 hover:bg-primary/10"
+        selected && "border-2 border-primary bg-primary/10 hover:bg-primary/10",
       )}
     >
       <CardContent className="flex flex-col gap-1 px-4">
@@ -47,9 +52,16 @@ export default function PlaceCard({ place, selected, onClick, onClose }: Props) 
           >
             {place.place_name}
           </a>
-          <Badge variant="secondary">{shortCategory(place.category_name)}</Badge>
+          <Badge variant="secondary">
+            {shortCategory(place.category_name)}
+          </Badge>
           {dist && (
-            <span className={cn("text-sm font-semibold text-primary", onClose ? "ml-1" : "ml-auto")}>
+            <span
+              className={cn(
+                "text-sm font-semibold text-primary",
+                onClose ? "ml-1" : "ml-auto",
+              )}
+            >
               {dist}
             </span>
           )}
@@ -57,7 +69,9 @@ export default function PlaceCard({ place, selected, onClick, onClose }: Props) 
         <p className="text-sm text-muted-foreground">
           {place.road_address_name || place.address_name}
         </p>
-        {place.phone && <p className="text-sm text-muted-foreground">{place.phone}</p>}
+        {place.phone && (
+          <p className="text-sm text-muted-foreground">{place.phone}</p>
+        )}
       </CardContent>
       {onClose && (
         <button
