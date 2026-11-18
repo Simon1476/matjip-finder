@@ -67,7 +67,7 @@ export default function PlaceCard({ place, selected, onClick, onClose }: Props) 
             e.stopPropagation();
             onClose();
           }}
-          className="absolute right-3 top-3 flex size-7 items-center justify-center rounded-full text-muted-foreground hover:bg-accent hover:text-foreground"
+          className="absolute right-2 top-2 flex size-9 items-center justify-center rounded-full text-muted-foreground hover:bg-accent hover:text-foreground"
         >
           ✕
         </button>

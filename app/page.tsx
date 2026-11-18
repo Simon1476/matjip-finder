@@ -88,23 +88,28 @@ export default function Home() {
       </div>
 
       <div className="mt-4">
-        <KakaoMap
-          places={places}
-          selectedId={selectedId}
-          onSelect={select}
-          origin={origin}
-          radius={origin ? radius : null}
-          onPickLocation={handlePickLocation}
-        />
+        {/* relative: 안쪽의 absolute 카드가 이 박스(=지도)를 기준으로 자리를 잡게 해요 */}
+        <div className="relative">
+          <KakaoMap
+            places={places}
+            selectedId={selectedId}
+            onSelect={select}
+            origin={origin}
+            radius={origin ? radius : null}
+            onPickLocation={handlePickLocation}
+          />
+          {/* 선택한 가게는 지도 "위에" 겹쳐서 보여줘요. 지도 아래 공간을 차지하지 않으니
+              (폰에서 화면 밖으로 밀리거나 아래 내용이 밀리는 일 없이) 누른 그 화면에서 바로 읽혀요 */}
+          {selectedPlace && (
+            // bg-card: 카드 색(primary/10)은 반투명이라 지도가 비쳐 보여서, 흰 바탕을 한 겹 깔아요
+            <div className="absolute inset-x-2 bottom-2 z-20 rounded-xl bg-card shadow-lg">
+              <PlaceCard place={selectedPlace} selected onClose={() => select(null)} />
+            </div>
+          )}
+        </div>
         <p className="mt-1.5 text-xs text-muted-foreground">
           💡 지도를 클릭하면 그 위치를 기준으로 주변 맛집을 찾아요.
         </p>
-        {/* 선택한 가게는 지도 바로 아래에 고정해서 보여줘요: 스크롤 없이 지도를 보던 시선 그대로 읽을 수 있어요 */}
-        {selectedPlace && (
-          <div className="mt-3">
-            <PlaceCard place={selectedPlace} selected onClose={() => select(null)} />
-          </div>
-        )}
       </div>
 
       <section className="mt-6">

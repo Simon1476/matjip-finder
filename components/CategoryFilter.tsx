@@ -15,11 +15,13 @@ interface Props {
 }
 
 export default function CategoryFilter({ category, disabled, onChange }: Props) {
-  const itemClass = "h-9 px-3.5 data-[pressed]:bg-primary data-[pressed]:text-primary-foreground";
+  // 폰: 버튼이 한 줄을 균등하게 나눠 갖고(flex-1) 손가락으로 누르기 좋은 높이(h-10). 넓은 화면: 글자 크기만큼만
+  const itemClass =
+    "h-10 flex-1 px-0 sm:flex-none sm:px-3.5 data-[pressed]:bg-primary data-[pressed]:text-primary-foreground";
   return (
     <ToggleGroup
       variant="outline"
-      className="flex-wrap"
+      className="w-full sm:w-auto"
       value={[category ?? ALL]}
       onValueChange={(values) => {
         // 이미 선택된 걸 다시 누르면 빈 배열이 와요. 항상 하나는 선택돼 있어야 하니 무시
