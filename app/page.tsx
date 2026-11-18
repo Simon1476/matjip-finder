@@ -3,6 +3,7 @@
 import { useState } from "react";
 import SearchBar from "@/components/SearchBar";
 import LocationControls from "@/components/LocationControls";
+import CategoryFilter, { type Category } from "@/components/CategoryFilter";
 import PlaceList from "@/components/PlaceList";
 import KakaoMap from "@/components/KakaoMap";
 import { Button } from "@/components/ui/button";
@@ -10,7 +11,12 @@ import { usePlaces } from "@/hooks/usePlaces";
 import { getCurrentPosition } from "@/lib/geolocation";
 import type { Origin } from "@/lib/types";
 
-const nearbyUrl = (o: Origin, r: number) => `/api/places?x=${o.lng}&y=${o.lat}&radius=${r}`;
+// 검색 주소를 만드는 곳을 여기 두 개로 모아요. 카테고리를 빠뜨리는 실수를 막으려는 거예요.
+const categoryParam = (c: Category | null) => (c ? `&category=${encodeURIComponent(c)}` : "");
+const nearbyUrl = (o: Origin, r: number, c: Category | null) =>
+  `/api/places?x=${o.lng}&y=${o.lat}&radius=${r}${categoryParam(c)}`;
+const regionUrl = (q: string, c: Category | null) =>
+  `/api/places?query=${encodeURIComponent(q)}${categoryParam(c)}`;
 
 export default function Home() {
   // 검색 결과 관련 상태/로직은 전부 훅 안에 있어요
@@ -22,11 +28,14 @@ export default function Home() {
   // 사용자가 고르는 "검색 조건"만 여기에 남아요
   const [origin, setOrigin] = useState<Origin | null>(null); // null이면 지역 검색 모드
   const [radius, setRadius] = useState(1000);
+  const [category, setCategory] = useState<Category | null>(null); // null이면 전체
+  const [lastQuery, setLastQuery] = useState<string | null>(null); // 지역 검색에서 마지막으로 검색한 지역명
 
-  // 지역 검색: 내 위치 모드를 끄고 키워드로 검색
+  // 지역 검색: 내 위치 모드를 끄고 키워드로 검색 (선택해 둔 카테고리는 유지)
   function handleSearch(query: string) {
     setOrigin(null);
-    search(`/api/places?query=${encodeURIComponent(query)}`);
+    setLastQuery(query);
+    search(regionUrl(query, category));
   }
 
   // 내 위치로 찾기: 브라우저에 현재 좌표를 물어본 뒤, 그 좌표 기준 반경 검색
@@ -34,20 +43,27 @@ export default function Home() {
     search(async () => {
       const o = await getCurrentPosition();
       setOrigin(o);
-      return nearbyUrl(o, radius);
+      return nearbyUrl(o, radius, category);
     });
   }
 
   // 지도를 클릭해서 기준 위치를 직접 지정: PC처럼 GPS가 없어 위치가 부정확할 때 쓰면 좋아요
   function handlePickLocation(o: Origin) {
     setOrigin(o);
-    search(nearbyUrl(o, radius));
+    search(nearbyUrl(o, radius, category));
   }
 
   // 1km ↔ 2km 전환: 내 위치 모드일 때만 다시 검색
   function handleRadiusChange(r: number) {
     setRadius(r);
-    if (origin) search(nearbyUrl(origin, r));
+    if (origin) search(nearbyUrl(origin, r, category));
+  }
+
+  // 카테고리 전환: 지금 모드(내 위치 / 지역 검색)에 맞게 다시 검색. 아직 검색한 적이 없으면 조건만 바꿔 둬요.
+  function handleCategoryChange(c: Category | null) {
+    setCategory(c);
+    if (origin) search(nearbyUrl(origin, radius, c));
+    else if (lastQuery) search(regionUrl(lastQuery, c));
   }
 
   return (
@@ -63,6 +79,10 @@ export default function Home() {
           onLocate={handleLocate}
           onRadiusChange={handleRadiusChange}
         />
+      </div>
+
+      <div className="mt-3">
+        <CategoryFilter category={category} disabled={loading} onChange={handleCategoryChange} />
       </div>
 
       <div className="mt-4">
@@ -82,7 +102,8 @@ export default function Home() {
       <section className="mt-6">
         {origin && !loading && !error && searched && (
           <p className="mb-3 text-sm text-muted-foreground">
-            📍 선택한 위치 기준 <b className="text-foreground">{radius / 1000}km</b> 이내 · 총{" "}
+            📍 선택한 위치 기준 <b className="text-foreground">{radius / 1000}km</b> 이내
+            {category && <> · <b className="text-foreground">{category}</b></>} · 총{" "}
             {total.toLocaleString()}곳 중 가까운 {places.length}곳
           </p>
         )}
